@@ -26,6 +26,9 @@ function [functionNames functionStatus ] = ExecuteExamplesInDirectory(parentDir,
 %    'verbose' -            Boolean. Be verbose? Default false
 %    'printnoexamples' -    Boolean. List functions that have no examples.
 %                           Default false.
+% .  'printreport'     -    Boolean. Print a report at the end? Default
+%                           true.  Set to false when recursing so we just
+%                           get a report at the end of the top level.
 %
 % Examples are provided in the code
 %
@@ -38,12 +41,16 @@ function [functionNames functionStatus ] = ExecuteExamplesInDirectory(parentDir,
 
 % Examples:
 %{
-    ExecuteExamplesInDirectory(pwd,'verbose',true);
+    theDir = fileparts(which('ExecuteExamplesInDirectory'));
+    ExecuteExamplesInDirectory(theDir,'verbose',true,'printnoexamples',true);
 %}
+
 % Input parser
 p = inputParser;
 p.addParameter('verbose',false,@islogical);
 p.addParameter('printnoexamples',false,@islogical);
+p.addParameter('printreport',true,@islogical);
+
 p.parse(varargin{:});
 
 % Get current directory and change to parentDir
@@ -69,7 +76,9 @@ for ii = 1:length(theContents)
         end
         
         % Recurse!
-        [tempFunctionNames,tempFunctionStatus] = ExecuteExamplesInDirectory(fullfile(parentDir,theContents(ii).name),...
+        [tempFunctionNames,tempFunctionStatus] = ...
+            ExecuteExamplesInDirectory(fullfile(parentDir,theContents(ii).name),...
+            'printreport',false, ...
             'verbose',p.Results.verbose);
         tempNRunFunctions = length(tempFunctionNames);
         functionNames = {functionNames{:} tempFunctionNames{:}};
@@ -99,23 +108,25 @@ for ii = 1:length(theContents)
 end
 
 %% Report at the end
-fprintf('\n*** Example Report ***\n\n');
-for ii = 1:length(functionNames)
-    % Get function name and its status
-    name = functionNames{ii};
-    status = functionStatus(ii);
-    
-    % Report as appropriate
-    if (status == -1)
-        fprintf(2,'%s: At least one example FAILED!\n',name);
-    elseif (status == 0)
-        if (p.Results.printnoexamples)
-            fprintf('%s: No examples found\n',name);
+if (p.Results.printreport)
+    fprintf('\n*** Example Test Report ***\n\n');
+    for ii = 1:length(functionNames)
+        % Get function name and its status
+        name = functionNames{ii};
+        status = functionStatus(ii);
+        
+        % Report as appropriate
+        if (status == -1)
+            fprintf(2,'%s: At least one example FAILED!\n',name);
+        elseif (status == 0)
+            if (p.Results.printnoexamples)
+                fprintf('%s: No examples found\n',name);
+            end
+        elseif (status > 0)
+            fprintf('%s: Ran %d examples OK!\n',name,status);
+        else
+            error('Unexpected value for returned status');
         end
-    elseif (status > 0)
-        fprintf('%s: Ran %d examples OK!\n',name,status);
-    else
-        error('Unexpected value for returned status');
     end
 end
 
