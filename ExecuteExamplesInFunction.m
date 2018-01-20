@@ -21,6 +21,10 @@ function status = ExectuteExamplesInFunction(theFunction,varargin)
 %    function reports a status of 0, even though there are examples in the
 %    source that may be run manually.
 %
+%    Some examples are not good for autoexecute (for example, some require
+%    user input and that could be annoying).  If text of the form
+%    "% ETTPSkip" appears in an example, it is not run.
+%
 % Inputs:
 %    theFunction - String.  Name of the function file (with the .m at the
 %                  end).
@@ -90,7 +94,7 @@ if (isempty(ind))
     return;
 end
 
-% Look for examples 
+% Look for examples
 nExamplesExecuted = 0;
 candidateText = theText{1}(ind(1)+9:end);
 startIndices = strfind(candidateText,'%{');
@@ -109,25 +113,40 @@ if (length(startIndices) ~= length(endIndices))
     status = -1;
     return;
 end
+
 nExamplesOK = 0;
+status = 0;
 for bb = 1:length(startIndices)
     % Get this example and run.  If it throws an error, return with
     % status -1. Otherwise, increment number of successful examples
     % counter, and status.
     exampleText = candidateText(startIndices(bb)+4:endIndices(bb)-1);
-    try
-        eval(exampleText);
+    
+    % Check for skip text in example.  Don't execute if it is there
+    skipTest = strfind(exampleText,'% ETTBSkip');
+    if (~isempty(skipTest))
         if (p.Results.verbose)
-            fprintf('\tExample %d success\n',bb);
+            fprintf('\tExample %d contains ''%% ETTBSkip'' - skipping.\n',bb);
         end
-        nExamplesOK = nExamplesOK+1;
-        status = nExamplesOK;
-    catch
-        status = -1;
-        if (p.Results.verbose)
-            fprintf('\tExample %d failed\n',bb);
+    
+    % Have a live example.  Run it.
+    else    
+        % Do the eval inside a function so workspace is clean and nothing here
+        % gets clobbered.
+        tempStatus = EvalClean(exampleText);
+        if (tempStatus == 0)
+            if (p.Results.verbose)
+                fprintf('\tExample %d success\n',bb);
+            end
+            nExamplesOK = nExamplesOK+1;
+            status = nExamplesOK;
+        else
+            status = -1;
+            if (p.Results.verbose)
+                fprintf('\tExample %d failed\n',bb);
+            end
+            return;
         end
-        return;
     end
     
     % If this is not the last block comment, check whether the next one is
@@ -141,6 +160,25 @@ for bb = 1:length(startIndices)
         end
     end
 end
-        
-    
+
+end
+
+% This short function forces examples to run in a clean workspace,
+% and protects the calling workspace.  Also closes any figures that
+% are open.
+function status = EvalClean(str)
+
+try
+    eval(str)
+    status = 0;
+catch
+    status = -1;
+end
+
+close all;
+
+end
+
+
+
 

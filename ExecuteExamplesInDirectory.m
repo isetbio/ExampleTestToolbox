@@ -13,6 +13,9 @@ function [functionNames functionStatus ] = ExecuteExamplesInDirectory(parentDir,
 %    Checks for itself and does not run its own examples, to prevent
 %    infinite recursion.
 %
+%    Also does not descend into directories whose name contains the string
+%    "underDevelopment"
+%
 % Inputs:
 %    parentDir -      String.  The directory to start in.
 %
@@ -44,6 +47,16 @@ function [functionNames functionStatus ] = ExecuteExamplesInDirectory(parentDir,
     theDir = fileparts(which('ExecuteExamplesInDirectory'));
     ExecuteExamplesInDirectory(theDir,'verbose',true,'printnoexamples',true);
 %}
+%{
+    % If you use isetbio and also have it on your path, you can try this.
+    ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
+      'isettools','wavefront'),'verbose',true);
+
+    % Although there is an example in synchronizeISETBIOWithRepository,
+    % it contains an "% ETTBSkip" comment and thus is skipped.
+    ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
+      'external'),'verbose',true);
+%}
 
 % Input parser
 p = inputParser;
@@ -70,7 +83,8 @@ for ii = 1:length(theContents)
     % Desend into directory?
     if (theContents(ii).isdir & ...
             ~strcmp(theContents(ii).name,'.') ...
-            & ~strcmp(theContents(ii).name,'..'))
+            & ~strcmp(theContents(ii).name,'..') ...
+            & isempty(strfind(theContents(ii).name,'underDevelopment')))
         if (p.Results.verbose)
             fprintf('Descending into %s\n',theContents(ii).name)
         end
