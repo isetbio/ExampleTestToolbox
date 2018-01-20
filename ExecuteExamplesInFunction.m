@@ -40,6 +40,9 @@ function status = ExectuteExamplesInFunction(theFunction,varargin)
 %
 % Optional key/value pairs:
 %    'verbose' -      Boolean. Be verbose? Default false
+%    'findfunction'   Boolean. Rather than take the full path to the
+%                     desired function, look for it on the path.  Default
+%                     false.
 %
 % Examples are provided in the code.
 %
@@ -49,6 +52,8 @@ function status = ExectuteExamplesInFunction(theFunction,varargin)
 
 % History
 %   01/16/18 dhb Wasting time on a train.
+%   01/20/18 dhb Add ability to look for funcitons
+%                on the path, via key/value pair.
 
 % Examples:
 %{
@@ -60,11 +65,27 @@ function status = ExectuteExamplesInFunction(theFunction,varargin)
     % recursion
     ExecuteExamplesInFunction('ExecuteExamplesInFunction.m')
 %}
+%{
+    % Try running examples in a function that is found on the path.
+    curDir = pwd;
+    cd(userpath);
+    ExecuteExamplesInFunction('TestFunctionWithExamples.m','findfunction',true);
+    cd(curDir);
+%}
 
 % Parse input
 p = inputParser;
 p.addParameter('verbose',false,@islogical);
+p.addParameter('findfunction',false,@islogical);
 p.parse(varargin{:});
+
+% Try to find function on path, if that is specified.
+if (p.Results.findfunction)
+    theFunction = which(theFunction);
+    if (isempty(theFunction))
+        error('Could not find desired function on path.')
+    end
+end
 
 % Open file
 theFileH = fopen(theFunction,'r');
