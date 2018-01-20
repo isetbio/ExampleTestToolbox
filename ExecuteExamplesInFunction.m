@@ -43,6 +43,9 @@ function status = ExectuteExamplesInFunction(theFunction,varargin)
 %    'findfunction'   Boolean. Rather than take the full path to the
 %                     desired function, look for it on the path.  Default
 %                     false.
+%    printexampletext' Boolean. Print out string to be evaluated for each
+%                     example.  Can be useful for debugging which example
+%                     is failing and why.  Default false.
 %
 % Examples are provided in the code.
 %
@@ -77,6 +80,7 @@ function status = ExectuteExamplesInFunction(theFunction,varargin)
 p = inputParser;
 p.addParameter('verbose',false,@islogical);
 p.addParameter('findfunction',false,@islogical);
+p.addParameter('printexampletext',false,@islogical);
 p.parse(varargin{:});
 
 % Try to find function on path, if that is specified.
@@ -151,7 +155,13 @@ for bb = 1:length(startIndices)
         end
     
     % Have a live example.  Run it.
-    else    
+    else 
+        % Dump example text if asked
+        if (p.Results.printexampletext)
+            fprintf('Example text:\n');
+            exampleText
+        end
+        
         % Do the eval inside a function so workspace is clean and nothing here
         % gets clobbered.
         tempStatus = EvalClean(exampleText);
