@@ -145,7 +145,7 @@ for bb = 1:length(startIndices)
     % Get this example and run.  If it throws an error, return with
     % status -1. Otherwise, increment number of successful examples
     % counter, and status.
-    exampleText = candidateText(startIndices(bb)+4:endIndices(bb)-1);
+    exampleText = candidateText(startIndices(bb)+3:endIndices(bb)-1);
     
     % Check for skip text in example.  Don't execute if it is there
     skipTest = strfind(exampleText,'% ETTBSkip');
