@@ -41,6 +41,7 @@ function [functionNames functionStatus ] = ExecuteExamplesInDirectory(parentDir,
 
 % History
 %   01/16/18  dhb   Wrote it.
+%   01/23/18  dhb   Pass verbose into subfunction.
 
 % Examples:
 %{
@@ -105,7 +106,7 @@ for ii = 1:length(theContents)
                 ~strcmp(theContents(ii).name,[mfilename '.m']))
             
             % Check examples and report status
-            status = ExecuteExamplesInFunction(theContents(ii).name);
+            status = ExecuteExamplesInFunction(theContents(ii).name,'verbose',p.Results.verbose);
             nRunFunctions = nRunFunctions+1;
             functionNames{nRunFunctions} = theContents(ii).name(1:end-2);
             functionStatus(nRunFunctions) = status;
