@@ -1,14 +1,13 @@
-function status = ExectuteExamplesInFunction(theFunction,varargin)
+function status = ExecuteExamplesInFunction(theFunction,varargin)
 % Open file, read it, parse execute any examples
 %
 % Syntax:
 %     status = ExecuteExmplesInFunction(theFunction)
 %
 % Description:
-%    Examples are enclosed in block quotes, following
-%    a comment line that starts exactly with "% Examples:".
-%    By enforcing the exact form, we maxmimize that we find only real
-%    examples.
+%    Examples are enclosed in block quotes, following a comment line that
+%    starts exactly with "% Examples:". By enforcing the exact form, we
+%    maxmimize the odds that we find only real examples.
 %
 %    Once there is a line that starts exactly with "% Examples:", any
 %    subsequent text in block quotes is treated as example code, until an
@@ -120,7 +119,7 @@ if (isempty(ind))
 end
 
 % Look for examples
-nExamplesExecuted = 0;
+% nExamplesExecuted = 0;
 candidateText = theText{1}(ind(1)+9:end);
 startIndices = strfind(candidateText,'%{');
 endIndices = strfind(candidateText,'%}');
@@ -149,7 +148,7 @@ for bb = 1:length(startIndices)
     
     % Check for skip text in example.  Don't execute if it is there
     skipTest = strfind(exampleText,'% ETTBSkip');
-    if (~isempty(skipTest))
+    if (~isempty(skipTest)) %#ok<*STREMP>
         if (p.Results.verbose)
             fprintf('\tExample %d contains ''%% ETTBSkip'' - skipping.\n',bb);
         end
@@ -159,7 +158,7 @@ for bb = 1:length(startIndices)
         % Dump example text if asked
         if (p.Results.printexampletext)
             fprintf('Example text:\n');
-            exampleText
+            exampleText %#ok<NOPRT>
         end
         
         % Do the eval inside a function so workspace is clean and nothing here

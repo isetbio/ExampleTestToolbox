@@ -1,4 +1,4 @@
-function [functionNames functionStatus ] = ExecuteExamplesInDirectory(parentDir,varargin)
+function [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir,varargin)
 % Recursively descend directory tree and execute examples in all functions
 %
 % Syntax:
