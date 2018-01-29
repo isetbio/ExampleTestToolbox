@@ -2,7 +2,7 @@ function [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir
 % Recursively descend directory tree and execute examples in all functions
 %
 % Syntax:
-%    ExecuteExamplesInDirectory(parentDir)
+%    [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir)
 %
 % Description:
 %    Run ExecuteExamplesInFunction on all of the .m files in a directory,
