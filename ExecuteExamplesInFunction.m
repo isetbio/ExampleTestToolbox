@@ -1,8 +1,8 @@
-function status = ExectuteExamplesInFunction(theFunction,varargin)
+function status = ExecuteExamplesInFunction(theFunction,varargin)
 % Open file, read it, parse execute any examples
 %
 % Syntax:
-%     status = ExecuteExmplesInFunction(theFunction)
+%     status = ExecuteExamplesInFunction(theFunction)
 %
 % Description:
 %    Examples are enclosed in block quotes, following
@@ -91,7 +91,7 @@ if (isempty(ind))
 end
 
 % Look for examples 
-nExamplesExecuted = 0;
+% nExamplesExecuted = 0;
 candidateText = theText{1}(ind(1)+9:end);
 startIndices = strfind(candidateText,'%{');
 endIndices = strfind(candidateText,'%}');
