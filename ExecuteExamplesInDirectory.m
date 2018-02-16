@@ -1,8 +1,8 @@
-function [functionNames functionStatus ] = ExecuteExamplesInDirectory(parentDir,varargin)
+function [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir,varargin)
 % Recursively descend directory tree and execute examples in all functions
 %
 % Syntax:
-%    ExecuteExamplesInDirectory(parentDir)
+%    [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir)
 %
 % Description:
 %    Run ExecuteExamplesInFunction on all of the .m files in a directory,
@@ -12,6 +12,9 @@ function [functionNames functionStatus ] = ExecuteExamplesInDirectory(parentDir,
 %
 %    Checks for itself and does not run its own examples, to prevent
 %    infinite recursion.
+%
+%    Also does not descend into directories whose name contains the string
+%    "underDevelopment"
 %
 % Inputs:
 %    parentDir -      String.  The directory to start in.
@@ -38,11 +41,22 @@ function [functionNames functionStatus ] = ExecuteExamplesInDirectory(parentDir,
 
 % History
 %   01/16/18  dhb   Wrote it.
+%   01/23/18  dhb   Pass verbose into subfunction.
 
 % Examples:
 %{
     theDir = fileparts(which('ExecuteExamplesInDirectory'));
     ExecuteExamplesInDirectory(theDir,'verbose',true,'printnoexamples',true);
+%}
+%{
+    % If you use isetbio and also have it on your path, you can try this.
+    ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
+      'isettools','wavefront'),'verbose',true);
+
+    % Although there is an example in synchronizeISETBIOWithRepository,
+    % it contains an "% ETTBSkip" comment and thus is skipped.
+    ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
+      'external'),'verbose',true);
 %}
 
 % Input parser
@@ -70,7 +84,8 @@ for ii = 1:length(theContents)
     % Desend into directory?
     if (theContents(ii).isdir & ...
             ~strcmp(theContents(ii).name,'.') ...
-            & ~strcmp(theContents(ii).name,'..'))
+            & ~strcmp(theContents(ii).name,'..') ...
+            & isempty(strfind(theContents(ii).name,'underDevelopment')))
         if (p.Results.verbose)
             fprintf('Descending into %s\n',theContents(ii).name)
         end
@@ -91,7 +106,7 @@ for ii = 1:length(theContents)
                 ~strcmp(theContents(ii).name,[mfilename '.m']))
             
             % Check examples and report status
-            status = ExecuteExamplesInFunction(theContents(ii).name);
+            status = ExecuteExamplesInFunction(theContents(ii).name,'verbose',p.Results.verbose);
             nRunFunctions = nRunFunctions+1;
             functionNames{nRunFunctions} = theContents(ii).name(1:end-2);
             functionStatus(nRunFunctions) = status;

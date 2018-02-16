@@ -5,10 +5,9 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
 %     status = ExecuteExamplesInFunction(theFunction)
 %
 % Description:
-%    Examples are enclosed in block quotes, following
-%    a comment line that starts exactly with "% Examples:".
-%    By enforcing the exact form, we maxmimize that we find only real
-%    examples.
+%    Examples are enclosed in block quotes, following a comment line that
+%    starts exactly with "% Examples:". By enforcing the exact form, we
+%    maxmimize the odds that we find only real examples.
 %
 %    Once there is a line that starts exactly with "% Examples:", any
 %    subsequent text in block quotes is treated as example code, until an
@@ -20,6 +19,10 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
 %    examples, to prevent an infinite recurse. Thus, if run on itself, this
 %    function reports a status of 0, even though there are examples in the
 %    source that may be run manually.
+%
+%    Some examples are not good for autoexecute (for example, some require
+%    user input and that could be annoying).  If text of the form
+%    "% ETTPSkip" appears in an example, it is not run.
 %
 % Inputs:
 %    theFunction - String.  Name of the function file (with the .m at the
@@ -36,6 +39,12 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
 %
 % Optional key/value pairs:
 %    'verbose' -      Boolean. Be verbose? Default false
+%    'findfunction'   Boolean. Rather than take the full path to the
+%                     desired function, look for it on the path.  Default
+%                     false.
+%    printexampletext' Boolean. Print out string to be evaluated for each
+%                     example.  Can be useful for debugging which example
+%                     is failing and why.  Default false.
 %
 % Examples are provided in the code.
 %
@@ -45,6 +54,8 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
 
 % History
 %   01/16/18 dhb Wasting time on a train.
+%   01/20/18 dhb Add ability to look for funcitons
+%                on the path, via key/value pair.
 
 % Examples:
 %{
@@ -56,11 +67,28 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
     % recursion
     ExecuteExamplesInFunction('ExecuteExamplesInFunction.m')
 %}
+%{
+    % Try running examples in a function that is found on the path.
+    curDir = pwd;
+    cd(userpath);
+    ExecuteExamplesInFunction('TestFunctionWithExamples.m','findfunction',true);
+    cd(curDir);
+%}
 
 % Parse input
 p = inputParser;
 p.addParameter('verbose',false,@islogical);
+p.addParameter('findfunction',false,@islogical);
+p.addParameter('printexampletext',false,@islogical);
 p.parse(varargin{:});
+
+% Try to find function on path, if that is specified.
+if (p.Results.findfunction)
+    theFunction = which(theFunction);
+    if (isempty(theFunction))
+        error('Could not find desired function on path.')
+    end
+end
 
 % Open file
 theFileH = fopen(theFunction,'r');
@@ -90,8 +118,6 @@ if (isempty(ind))
     return;
 end
 
-% Look for examples 
-% nExamplesExecuted = 0;
 candidateText = theText{1}(ind(1)+9:end);
 startIndices = strfind(candidateText,'%{');
 endIndices = strfind(candidateText,'%}');
@@ -109,25 +135,46 @@ if (length(startIndices) ~= length(endIndices))
     status = -1;
     return;
 end
+
 nExamplesOK = 0;
+status = 0;
 for bb = 1:length(startIndices)
     % Get this example and run.  If it throws an error, return with
     % status -1. Otherwise, increment number of successful examples
     % counter, and status.
-    exampleText = candidateText(startIndices(bb)+4:endIndices(bb)-1);
-    try
-        eval(exampleText);
+    exampleText = candidateText(startIndices(bb)+3:endIndices(bb)-1);
+    
+    % Check for skip text in example.  Don't execute if it is there
+    skipTest = strfind(exampleText,'% ETTBSkip');
+    if (~isempty(skipTest)) %#ok<*STREMP>
         if (p.Results.verbose)
-            fprintf('\tExample %d success\n',bb);
+            fprintf('\tExample %d contains ''%% ETTBSkip'' - skipping.\n',bb);
         end
-        nExamplesOK = nExamplesOK+1;
-        status = nExamplesOK;
-    catch
-        status = -1;
-        if (p.Results.verbose)
-            fprintf('\tExample %d failed\n',bb);
+    
+    % Have a live example.  Run it.
+    else 
+        % Dump example text if asked
+        if (p.Results.printexampletext)
+            fprintf('Example text:\n');
+            exampleText %#ok<NOPRT>
         end
-        return;
+        
+        % Do the eval inside a function so workspace is clean and nothing here
+        % gets clobbered.
+        tempStatus = EvalClean(exampleText);
+        if (tempStatus == 0)
+            if (p.Results.verbose)
+                fprintf('\tExample %d success\n',bb);
+            end
+            nExamplesOK = nExamplesOK+1;
+            status = nExamplesOK;
+        else
+            status = -1;
+            if (p.Results.verbose)
+                fprintf('\tExample %d failed\n',bb);
+            end
+            return;
+        end
     end
     
     % If this is not the last block comment, check whether the next one is
@@ -141,6 +188,25 @@ for bb = 1:length(startIndices)
         end
     end
 end
-        
-    
+
+end
+
+% This short function forces examples to run in a clean workspace,
+% and protects the calling workspace.  Also closes any figures that
+% are open.
+function status = EvalClean(str)
+
+try
+    eval(str)
+    status = 0;
+catch
+    status = -1;
+end
+
+close all;
+
+end
+
+
+
 
