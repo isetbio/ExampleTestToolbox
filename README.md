@@ -14,7 +14,7 @@ Examples are usually embedded near the top of the program, separated from the to
 %}
 ```
 
-## RunExamples.
+## RunExamples
 
 This function takes either a function or a directory as an argument.  RunExamples determines whether the input is a file or a directory and then invokes the functions **ExecuteExamplesInFunction** or **ExecuteExamplesInDirectory**.
 
