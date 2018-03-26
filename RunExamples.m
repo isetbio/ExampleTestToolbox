@@ -24,17 +24,21 @@ p = inputParser;
 p.addRequired('str',@ischar);
 p.addParameter('printflag',false,@islogical);
 p.addParameter('findflag',true,@islogical);
+p.addParameter('verbose',false,@islogical);
 
 p.parse(str,varargin{:});
 pFlag = p.Results.printflag;
 fFlag = p.Results.findflag;
+verbose = p.Results.verbose;
 
 %%
 if exist(str,'dir')
     [names,status] = ExecuteExamplesInDirectory(str);
 elseif exist(str,'file')
     names  = str;
-    status = ExecuteExamplesInFunction(str,'findfunction',fFlag,'printexampletext',pFlag);
+    status = ExecuteExamplesInFunction(str,'findfunction',fFlag,...
+        'printexampletext',pFlag,...
+        'verbose',verbose);
 else
     error('No file or directory %s\n',str);
 end
