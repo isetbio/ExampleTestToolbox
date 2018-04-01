@@ -42,14 +42,14 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
 %    'findfunction'   Boolean. Rather than take the full path to the
 %                     desired function, look for it on the path.  Default
 %                     false.
-%    printexampletext' Boolean. Print out string to be evaluated for each
+%    'printexampletext' Boolean. Print out string to be evaluated for each
 %                     example.  Can be useful for debugging which example
 %                     is failing and why.  Default false.
 %
 % Examples are provided in the code.
 %
 % See also:
-%    ExecuteTextInScript
+%    ExecuteTextInScript, RunExamples
 %
 
 % History
@@ -75,14 +75,14 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
     cd(curDir);
 %}
 
-% Parse input
+%% Parse input
 p = inputParser;
 p.addParameter('verbose',false,@islogical);
 p.addParameter('findfunction',false,@islogical);
 p.addParameter('printexampletext',false,@islogical);
 p.parse(varargin{:});
 
-% Try to find function on path, if that is specified.
+%% Try to find function on path, if that is specified.
 if (p.Results.findfunction)
     theFunction = which(theFunction);
     if (isempty(theFunction))

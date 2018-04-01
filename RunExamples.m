@@ -13,7 +13,6 @@ function [names,status] = RunExamples(str,varargin)
   [names,status] = RunExamples('opticsGet.m','findflag',true,'printflag',true);
   [names,status] = RunExamples('opticsGet.m','findflag',true,'printflag',false);
 %}
-% Examples:
 %{
   directory = fullfile(isetbioRootPath,'isettools','opticalimage');
   [names,status] = RunExamples(directory,'findflag',true,'printflag',false);
