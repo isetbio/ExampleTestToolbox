@@ -92,7 +92,7 @@ end
 
 % Open file
 theFileH = fopen(theFunction,'r');
-theText = string(fread(theFileH,'uint8=>char')');
+theText = {char(fread(theFileH,'uint8=>char')')};
 fclose(theFileH);
 
 % Say hello

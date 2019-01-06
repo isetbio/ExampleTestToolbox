@@ -57,7 +57,7 @@ p.parse(theFunction,varargin{:});
 %% Open file
 fullFileName = which(theFunction);
 theFileH = fopen(fullFileName,'r');
-theText = string(fread(theFileH,'uint8=>char')');
+theText = {char(fread(theFileH,'uint8=>char')')};
 fclose(theFileH);
 
 % Say hello

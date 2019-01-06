@@ -47,7 +47,7 @@ function ExecuteTextInScript(theScript)
 
 % Open file
 theFileH = fopen(theScript,'r');
-theText = string(fread(theFileH,'uint8=>char')');
+theText = {char(fread(theFileH,'uint8=>char')')};
 fclose(theFileH);
 
 % Evaluate the text
