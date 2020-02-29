@@ -197,7 +197,8 @@ end
 
 % This short function forces examples to run in a clean workspace,
 % and protects the calling workspace.  Also closes any figures that
-% are open.
+% are open if CLOSEFIGS is true, unless the called example clobbers
+% the workspace in which case they are also left open.
 function status = EvalClean(str,CLOSEFIGS)
 
 try
@@ -207,7 +208,7 @@ catch
     status = -1;
 end
 
-if (CLOSEFIGS)
+if (exist('CLOSEFIGS','var') & CLOSEFIGS)
     close all;
 end
 
