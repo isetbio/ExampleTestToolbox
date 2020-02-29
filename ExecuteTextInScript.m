@@ -51,7 +51,7 @@ theText = {char(fread(theFileH,'uint8=>char')')};
 fclose(theFileH);
 
 % Evaluate the text
-eval(theText);
+eval(theText{1});
 
 
 %{
