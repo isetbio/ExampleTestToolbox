@@ -45,6 +45,8 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
 %    'printexampletext' Boolean. Print out string to be evaluated for each
 %                     example.  Can be useful for debugging which example
 %                     is failing and why.  Default false.
+%    'closefigs'      Close figures after running each example.  Default
+%                     true.
 %
 % Examples are provided in the code.
 %
@@ -56,6 +58,7 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
 %   01/16/18 dhb Wasting time on a train.
 %   01/20/18 dhb Add ability to look for funcitons
 %                on the path, via key/value pair.
+%   02/29/20 dhb Add closefigs paramter.
 
 % Examples:
 %{
@@ -80,6 +83,7 @@ p = inputParser;
 p.addParameter('verbose',false,@islogical);
 p.addParameter('findfunction',false,@islogical);
 p.addParameter('printexampletext',false,@islogical);
+p.addParameter('closefigs',true,@islogical);
 p.parse(varargin{:});
 
 %% Try to find function on path, if that is specified.
@@ -161,7 +165,7 @@ for bb = 1:length(startIndices)
         
         % Do the eval inside a function so workspace is clean and nothing here
         % gets clobbered.
-        tempStatus = EvalClean(exampleText);
+        tempStatus = EvalClean(exampleText,p.Results.closefigs);
         if (tempStatus == 0)
             if (p.Results.verbose)
                 fprintf('\tExample %d success\n',bb);
@@ -194,7 +198,7 @@ end
 % This short function forces examples to run in a clean workspace,
 % and protects the calling workspace.  Also closes any figures that
 % are open.
-function status = EvalClean(str)
+function status = EvalClean(str,CLOSEFIGS)
 
 try
     eval(str)
@@ -203,7 +207,9 @@ catch
     status = -1;
 end
 
-close all;
+if (CLOSEFIGS)
+    close all;
+end
 
 end
 

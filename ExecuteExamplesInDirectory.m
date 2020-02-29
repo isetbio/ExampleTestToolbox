@@ -32,6 +32,8 @@ function [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir
 % .  'printreport'     -    Boolean. Print a report at the end? Default
 %                           true.  Set to false when recursing so we just
 %                           get a report at the end of the top level.
+%    'closefigs'      -     Close figures after running each example.  Default
+%                           true.
 %
 % Examples are provided in the code
 %
@@ -64,7 +66,7 @@ p = inputParser;
 p.addParameter('verbose',false,@islogical);
 p.addParameter('printnoexamples',false,@islogical);
 p.addParameter('printreport',true,@islogical);
-
+p.addParameter('closefigs',true,@islogical);
 p.parse(varargin{:});
 
 % Get current directory and change to parentDir
@@ -94,7 +96,8 @@ for ii = 1:length(theContents)
         [tempFunctionNames,tempFunctionStatus] = ...
             ExecuteExamplesInDirectory(fullfile(parentDir,theContents(ii).name),...
             'printreport',false, ...
-            'verbose',p.Results.verbose);
+            'verbose',p.Results.verbose, ...
+            'closefigs',p.Results.closefigs);
         tempNRunFunctions = length(tempFunctionNames);
         functionNames = {functionNames{:} tempFunctionNames{:}};
         functionStatus = [functionStatus(:) ; tempFunctionStatus(:)];
@@ -106,7 +109,9 @@ for ii = 1:length(theContents)
                 ~strcmp(theContents(ii).name,[mfilename '.m']))
             
             % Check examples and report status
-            status = ExecuteExamplesInFunction(theContents(ii).name,'verbose',p.Results.verbose);
+            status = ExecuteExamplesInFunction(theContents(ii).name, ...
+                'verbose',p.Results.verbose, ...
+                'closefigs',p.Results.closefigs);
             nRunFunctions = nRunFunctions+1;
             functionNames{nRunFunctions} = theContents(ii).name(1:end-2);
             functionStatus(nRunFunctions) = status;
