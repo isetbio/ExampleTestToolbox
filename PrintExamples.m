@@ -45,7 +45,7 @@ function status = PrintExamples(theFunction,varargin)
 % Examples:
 %{
     % Should execute both examples successfully
-    PrintExamples('ExecuteTextInScript')
+    PrintExamples('ExecuteTextInScript');
 %}
 
 %% Parse input
@@ -111,6 +111,8 @@ for bb = 1:length(startIndices)
     fprintf('Example %d \n----------\n',cnt);
     % Find the end of line for the %{ part.  Sometimes people put in
     % extra spaces, so we need to actually find the EOL.
+    % Putting this '%}' prevents and ETTB error because number of open and
+    % close block comment symbols must match up in the file.
     idx = find(int8(candidateText(startIndices(bb):(startIndices(bb)+8))) == 10);
     
     % Pull out the example text

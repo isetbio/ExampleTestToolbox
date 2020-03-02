@@ -10,16 +10,27 @@ function [names,status] = RunExamples(str,varargin)
 
 % Examples:
 %{
+    % Exercise ExampleTestToolbox
+    theDir = fileparts(which('RunExamples'));
+    ExecuteExamplesInFunction(fullfile(theDir,'ExecuteExamplesInDirectory.m'));
+    ExecuteExamplesInFunction(fullfile(theDir,'ExecuteExamplesInFunction.m'));
+    ExecuteExamplesInFunction(fullfile(theDir,'PrintExamples.m'));
+%}
+%{
   % Requires ISETBio on path.
-  [names,status] = RunExamples('opticsGet.m','findflag',true,'printflag',true);
-  [names,status] = RunExamples('opticsGet.m','findflag',true,'printflag',false);
-  [names,status] = RunExamples('opticsGet.m','findflag',true,'printflag',false, ...
-    'closefigs',false);
+  if (exist('opticsGet','file'))
+      [names,status] = RunExamples('opticsGet.m','findflag',true,'printflag',true);
+      [names,status] = RunExamples('opticsGet.m','findflag',true,'printflag',false);
+      [names,status] = RunExamples('opticsGet.m','findflag',true,'printflag',false, ...
+        'closefigs',false);
+  end
 %}
 %{
   % Requires ISETBio on path
-  directory = fullfile(isetbioRootPath,'isettools','opticalimage');
-  [names,status] = RunExamples(directory,'findflag',true,'printflag',false);
+    if (exist('isetbioRootPath','file'))
+        directory = fullfile(isetbioRootPath,'isettools','opticalimage');
+        [names,status] = RunExamples(directory,'findflag',true,'printflag',false);
+    end
 %}
 
 %%

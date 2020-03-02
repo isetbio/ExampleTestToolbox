@@ -48,17 +48,19 @@ function [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir
 % Examples:
 %{
     theDir = fileparts(which('ExecuteExamplesInDirectory'));
-    ExecuteExamplesInDirectory(theDir,'verbose',true,'printnoexamples',true);
+    ExecuteExamplesInDirectory(fullfile(theDir,'TestSubdir'),'verbose',true,'printnoexamples',true);
 %}
 %{
     % If you use isetbio and also have it on your path, you can try this.
-    ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
-      'isettools','wavefront'),'verbose',true);
+    if (exist('isetbioRootPath','file'))
+        ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
+          'isettools','wavefront'),'verbose',true);
 
-    % Although there is an example in synchronizeISETBIOWithRepository,
-    % it contains an "% ETTBSkip" comment and thus is skipped.
-    ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
-      'external'),'verbose',true);
+        % Although there is an example in synchronizeISETBIOWithRepository,
+        % it contains an "% ETTBSkip" comment and thus is skipped.
+        ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
+          'external'),'verbose',true);
+    end
 %}
 
 % Input parser
