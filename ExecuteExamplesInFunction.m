@@ -112,11 +112,13 @@ if (strcmp(theFunction,[mfilename '.m']))
     return;
 end
 
-% Look for a comment line with the text " Examples:"
-ind = strfind(theText{1},'% Examples:') | strfind(theText{1},'% Example');
+% Look for examples in file.
+ind1 = strfind(theText{1},'% Examples:');
+ind2 = strfind(theText{1},'% Example:');
+ind = [ind1 ind2];
 if (isempty(ind))
     if (p.Results.verbose)
-        fprintf('\tNo comment line starting with "%% Examples:" in file\n');
+        fprintf('\tNo comment line starting with "%% Examples:" or "%% Example:" in file\n');
     end
     status = 0;
     return;
