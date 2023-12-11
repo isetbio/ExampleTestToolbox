@@ -79,6 +79,8 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
 %}
 
 %% Parse input
+varargin = ieParamFormat(varargin);
+
 p = inputParser;
 p.addParameter('verbose',false,@islogical);
 p.addParameter('findfunction',false,@islogical);
@@ -162,7 +164,7 @@ for bb = 1:length(startIndices)
         % Dump example text if asked
         if (p.Results.printexampletext)
             fprintf('Example text:\n');
-            exampleText %#ok<NOPRT>
+            disp(exampleText) %#ok<NOPRT>
         end
         
         % Do the eval inside a function so workspace is clean and nothing here
