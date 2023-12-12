@@ -63,7 +63,7 @@ function [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir
     end
 %}
 
-% Input parser
+%% Input parser
 p = inputParser;
 p.addParameter('verbose',false,@islogical);
 p.addParameter('printnoexamples',false,@islogical);
@@ -78,7 +78,7 @@ cd(parentDir);
 % Get everyting in the directory
 theContents = dir(fullfile('*'));
 
-% Here we go
+%% Here we go
 nRunFunctions = 0;
 functionNames = {};
 functionStatus = [];
@@ -118,12 +118,12 @@ for ii = 1:length(theContents)
             functionNames{nRunFunctions} = theContents(ii).name(1:end-2);
             functionStatus(nRunFunctions) = status;
         else
-            if (p.Results.verbose)
+            if (p.Results.verbose) && ~isequal(theContents(ii).name(1),'.')
                 fprintf('%s: Ignoring\n',theContents(ii).name);
             end
         end
     else
-        if (p.Results.verbose)
+        if (p.Results.verbose) && ~isequal(theContents(ii).name(1),'.')
             fprintf('%s: Ignoring\n',theContents(ii).name);
         end
     end
