@@ -111,6 +111,7 @@ for ii = 1:length(theContents)
                 ~strcmp(theContents(ii).name,[mfilename '.m']))
             
             % Check examples and report status
+            fprintf('Checking function %s\n',theContents(ii).name);
             status = ExecuteExamplesInFunction(theContents(ii).name, ...
                 'verbose',p.Results.verbose, ...
                 'closefigs',p.Results.closefigs);
