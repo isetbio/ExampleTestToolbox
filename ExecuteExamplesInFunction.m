@@ -79,9 +79,12 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
 %}
 
 %% Parse input
-varargin = ieParamFormat(varargin);
+if (exist('ieParamFormat','file'))
+    varargin = ieParamFormat(varargin);
+end
 
 p = inputParser;
+p.CaseSensitive = false;
 p.addParameter('verbose',false,@islogical);
 p.addParameter('findfunction',false,@islogical);
 p.addParameter('printexampletext',false,@islogical);
