@@ -79,6 +79,10 @@ function status = ExecuteExamplesInFunction(theFunction,varargin)
 %}
 
 %% Parse input
+%
+% This converts keys and (I think) string values to lower case without spaces,
+% if you have ieParamFormat on your path.  Matches ISETBio/ISETCam
+% conventions, but not available if you are not living in the ISET universe.
 if (exist('ieParamFormat','file'))
     varargin = ieParamFormat(varargin);
 end
