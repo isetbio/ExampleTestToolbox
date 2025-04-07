@@ -48,7 +48,9 @@ verbose = p.Results.verbose;
 
 %%
 if exist(str,'dir')
-    [names,status] = ExecuteExamplesInDirectory(str);
+    [names,status] = ExecuteExamplesInDirectory(str, ...
+         'verbose',verbose, ...
+         'closefigs',p.Results.closefigs);
 elseif exist(str,'file')
     names  = str;
     status = ExecuteExamplesInFunction(str,'findfunction',fFlag,...
